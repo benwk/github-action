@@ -14,7 +14,7 @@ on:
         type: string
       pr-id:
         required: false
-        type: number
+        type: string
     outputs:
       result:
         description: "Deployment results"
