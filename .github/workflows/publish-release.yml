@@ -1,0 +1,40 @@
+name: Publish a Release
+
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        required: true
+        type: string
+        default: prerelease
+      release_id:
+        required: true
+        type: string
+    outputs:
+      result:
+        description: The result of the action
+        value: ${{ jobs.publish_release.outputs.result }}
+
+jobs:
+  publish_release:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.result.outputs.result }}
+    steps:
+      - name: Get the release
+        id: get-release
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commitSha: ${{ inputs.sha }} 
+          prerelease: true
+      - name: Publish the release
+        uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ steps.get-release.outputs.id }}
+          prerelease: false
+      - name: Set result
+        id: result
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
