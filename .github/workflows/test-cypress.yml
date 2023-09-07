@@ -9,7 +9,7 @@ on:
     outputs:
       result:
         description: "Test results"
-        value: ${{ jobs.cypress-run.outputs.result }}
+        value: ${{ jobs.cypress-run-e2e.outputs.result }}
     secrets:
       CYPRESS_RECORD_KEY:
         required: true
@@ -66,3 +66,7 @@ jobs:
       - name: Set test result
         id: result
         run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+      - name: Add Label
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: e2e
