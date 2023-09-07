@@ -69,7 +69,7 @@ jobs:
           body: "**Automated pull request**"
           reviewer: benwk
           assignee: ${{ github.actor }}
-          label: enhancement
+          label: release
       - name: Set release result
         id: result
         run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
