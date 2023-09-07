@@ -108,4 +108,5 @@ jobs:
         if: ${{ inputs.pr-id }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
+          number: ${{ inputs.pr-id }}
           labels: ${{ inputs.environment }}
