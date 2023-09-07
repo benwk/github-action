@@ -87,9 +87,9 @@ jobs:
         id: result
         run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
 
-  comment-on-pr:
+  feedback-on-pr:
     timeout-minutes: 10
-    name: Comment on Pull Request
+    name: Feedback on Pull Request
     needs: deploy
     runs-on: ubuntu-latest
     permissions:
@@ -104,3 +104,8 @@ jobs:
             Preview URL is ready: https://${{ inputs.public-domain }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
+      - name: Add Label
+        if: ${{ inputs.pr-id }}
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: ${{ inputs.environment }}
