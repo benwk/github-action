@@ -6,6 +6,9 @@ on:
       test-url:
         required: true
         type: string
+      pr-id:
+        required: false
+        type: string
     outputs:
       result:
         description: "Test results"
@@ -69,4 +72,5 @@ jobs:
       - name: Add Label
         uses: actions-ecosystem/action-add-labels@v1
         with:
+          number: ${{ inputs.pr-id }}
           labels: e2e
