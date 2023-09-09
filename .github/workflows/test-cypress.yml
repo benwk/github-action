@@ -51,7 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Cypress run locally
-        if: ${{ inputs.local == 'true' }}
+        if: ${{ inputs.local }}
         uses: cypress-io/github-action@v5
         with:
           start: npm start
@@ -67,7 +67,7 @@ jobs:
           COMMIT_INFO_MESSAGE: ${{github.event.pull_request.title}}
           COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
       - name: Cypress run remotely
-        if: ${{ inputs.local != 'true' }}
+        if: ${{ !inputs.local }}
         uses: cypress-io/github-action@v5
         with:
           config: baseUrl=${{ inputs.test-url }}
