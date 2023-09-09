@@ -9,6 +9,10 @@ on:
       pr-id:
         required: false
         type: string
+      local:
+        required: false
+        type: boolean
+        default: true
     outputs:
       result:
         description: "Test results"
@@ -46,12 +50,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Cypress run
+      - name: Cypress run locally
+        if: ${{ inputs.local == 'true' }}
         uses: cypress-io/github-action@v5
         with:
           start: npm start
           config: baseUrl=${{ inputs.test-url }}
           # wait-on: ${{ inputs.test-url }}
+          record: true
+          parallel: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          CYPRESS_CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CYPRESS_CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_INFO_MESSAGE: ${{github.event.pull_request.title}}
+          COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
+      - name: Cypress run remotely
+        if: ${{ inputs.local != 'true' }}
+        uses: cypress-io/github-action@v5
+        with:
+          config: baseUrl=${{ inputs.test-url }}
+          wait-on: ${{ inputs.test-url }}
           record: true
           parallel: true
         env:
