@@ -9,6 +9,12 @@ on:
       pr-id:
         required: false
         type: string
+      cf-access-client-id:
+        required: false
+        type: string
+      cf-access-client-secret:
+        required: false
+        type: string
     outputs:
       result:
         description: "Test results"
@@ -55,6 +61,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_INFO_MESSAGE: ${{github.event.pull_request.title}}
           COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
+          CF_ACCESS_CLIENT_ID: ${{ inputs.cf-access-client-id }}
+          CF_ACCESS_CLIENT_SECRET: ${{ inputs.cf-access-client-secret }}
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
