@@ -7,10 +7,13 @@ on:
         required: true
         type: string
       public-domain:
-        required: true
+        required: false
         type: string
       public-twitter:
-        required: true
+        required: false
+        type: string
+      ga-measurement:
+        required: false
         type: string
       pr-id:
         required: false
@@ -38,11 +41,12 @@ jobs:
         env:
           PUBLIC_DOMAIN: ${{ inputs.public-domain }}
           PUBLIC_TWITTER: ${{ inputs.public-twitter }}
+          GA_MEASUREMENT: ${{ inputs.ga-measurement }}
       - name: Archive artifact
         uses: actions/upload-artifact@v3
         with:
           name: app
-          path:  |
+          path: |
             dist
             function
           retention-days: 3
@@ -76,7 +80,7 @@ jobs:
           directory: dist
           branch: main
           workingDirectory: app
-          wranglerVersion: '3'
+          wranglerVersion: "3"
       - name: Outputs
         run: |
           echo "ID: ${{ steps.publish.outputs.id }}"
