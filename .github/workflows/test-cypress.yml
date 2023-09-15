@@ -19,7 +19,7 @@ on:
         value: ${{ jobs.cypress-run-e2e.outputs.result }}
     secrets:
       CYPRESS_RECORD_KEY:
-        required: true
+        required: false
       CF_ACCESS_CLIENT_ID:
         required: false
       CF_ACCESS_CLIENT_SECRET:
@@ -41,7 +41,7 @@ jobs:
       #     component: true
       - name: Skip for now
         run: echo "Skip for now"
-  
+
   cypress-run-e2e:
     name: E2E Tests
     runs-on: ubuntu-22.04
