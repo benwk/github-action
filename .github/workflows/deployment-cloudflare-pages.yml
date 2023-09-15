@@ -51,7 +51,7 @@ jobs:
           PUBLIC_DOMAIN: ${{ inputs.public-domain }}
           PUBLIC_TWITTER: ${{ inputs.public-twitter }}
           GA_MEASUREMENT: ${{ inputs.ga-measurement }}
-          SENTRY_PUBLIC_KEY: ${{ inputs.sentry-public-key }}
+          SENTRY_PUBLIC_KEY: ${{ secrets.sentry-public-key }}
           SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
           SENTRY_ORG_ID: ${{ inputs.sentry-org-id }}
       - name: Archive artifact
