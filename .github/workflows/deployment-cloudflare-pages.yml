@@ -15,6 +15,15 @@ on:
       ga-measurement:
         required: false
         type: string
+      sentry-public-key:
+        required: false
+        type: string
+      sentry-project-id:
+        required: false
+        type: string
+      sentry-org-id:
+        required: false
+        type: string
       pr-id:
         required: false
         type: string
@@ -39,9 +48,13 @@ jobs:
           npm ci
           npm run build --if-present
         env:
+          ENVIRONMENT: ${{ inputs.environment }}
           PUBLIC_DOMAIN: ${{ inputs.public-domain }}
           PUBLIC_TWITTER: ${{ inputs.public-twitter }}
           GA_MEASUREMENT: ${{ inputs.ga-measurement }}
+          SENTRY_PUBLIC_KEY: ${{ inputs.sentry-public-key }}
+          SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
+          SENTRY_ORG_ID: ${{ inputs.sentry-org-id }}
       - name: Archive artifact
         uses: actions/upload-artifact@v3
         with:
