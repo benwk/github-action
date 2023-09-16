@@ -13,6 +13,9 @@ on:
         required: false
         type: boolean
         default: true
+      public-domain:
+        required: false
+        type: string
     outputs:
       result:
         description: "Test results"
@@ -41,7 +44,7 @@ jobs:
       #     component: true
       - name: Skip for now
         run: echo "Skip for now"
-  
+
   cypress-run-e2e:
     name: E2E Tests
     runs-on: ubuntu-22.04
@@ -78,6 +81,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CYPRESS_CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          CYPRESS_PUBLIC_DOMAIN: ${{ inputs.public-domain }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_INFO_MESSAGE: ${{github.event.pull_request.title}}
           COMMIT_INFO_SHA: ${{github.event.pull_request.head.sha}}
