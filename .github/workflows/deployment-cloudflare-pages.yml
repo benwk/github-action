@@ -6,10 +6,23 @@ on:
       environment:
         required: true
         type: string
-      public-domain:
+      hostname:
         required: false
         type: string
-      public-twitter:
+      port:
+        required: false
+        type: string
+      protocol:
+        required: false
+        type: string
+        default: https
+      twitter:
+        required: false
+        type: string
+      github:
+        required: false
+        type: string
+      discord:
         required: false
         type: string
       ga-measurement:
@@ -48,8 +61,12 @@ jobs:
           npm run build --if-present
         env:
           ENVIRONMENT: ${{ inputs.environment }}
-          PUBLIC_DOMAIN: ${{ inputs.public-domain }}
-          PUBLIC_TWITTER: ${{ inputs.public-twitter }}
+          HOSTNAME: ${{ inputs.hostname }}
+          PORT: ${{ inputs.port }}
+          PROTOCOL: ${{ inputs.protocol }}
+          TWITTER: ${{ inputs.twitter }}
+          GITHUB: ${{ inputs.github }}
+          DISCORD: ${{ inputs.discord }}
           GA_MEASUREMENT: ${{ inputs.ga-measurement }}
           SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
           SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
