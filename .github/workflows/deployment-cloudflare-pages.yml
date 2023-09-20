@@ -89,7 +89,7 @@ jobs:
       result: ${{ steps.result.outputs.result }}
     environment:
       name: ${{ inputs.environment }}
-      url: https://${{ inputs.public-domain }}
+      url: https://${{ inputs.hostname }}
     permissions:
       contents: read
       deployments: write
@@ -134,7 +134,7 @@ jobs:
         with:
           message: |
             Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
-            Preview URL is ready: https://${{ inputs.public-domain }}
+            Preview URL is ready: https://${{ inputs.hostname }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
