@@ -35,11 +35,7 @@ jobs:
       deployments: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Use Node 12
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
+        uses: actions/checkout@v3
       - name: Install Railway
         run: npm i -g @railway/cli
       - name: Deploy
