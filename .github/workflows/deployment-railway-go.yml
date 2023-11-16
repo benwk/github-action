@@ -6,6 +6,9 @@ on:
       environment:
         required: true
         type: string
+      service:
+        required: true
+        type: string
       hostname:
         required: false
         type: string
@@ -16,9 +19,6 @@ on:
       result:
         description: "Deployment results"
         value: ${{ jobs.deploy.outputs.result }}
-    # secrets:
-    #   RAILWAY_TOKEN:
-    #     required: true
 
 jobs:
   deploy:
@@ -39,7 +39,7 @@ jobs:
       - name: Install Railway
         run: npm i -g @railway/cli
       - name: Deploy
-        run: railway up
+        run: railway up --service ${{ inputs.service }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       - name: Set deployment result
