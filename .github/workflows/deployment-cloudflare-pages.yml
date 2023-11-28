@@ -44,17 +44,6 @@ on:
       result:
         description: "Deployment results"
         value: ${{ jobs.deploy.outputs.result }}
-    secrets:
-      SENTRY_PUBLIC_KEY:
-        required: false
-      CLOUDFLARE_API_TOKEN:
-        required: true
-      PUBLIC_TURNSLITE_KEY_INVISIBLE:
-        required: false
-      PUBLIC_TURNSLITE_KEY_MANAGED:
-        required: false
-      PUBLIC_GOOGLE_MAP_KEY:
-        required: false
 
 jobs:
   build:
