@@ -23,7 +23,7 @@ on:
 jobs:
   deploy:
     timeout-minutes: 10
-    name: Publish to ${{ inputs.environment }} environment
+    name: Deploy to ${{ inputs.environment }} environment
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.result.outputs.result }}

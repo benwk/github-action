@@ -37,23 +37,70 @@ on:
       pr-id:
         required: false
         type: string
-      PUBLIC_API_HOSTNAME:
-        required: false
-        type: string
     outputs:
       result:
         description: "Deployment results"
         value: ${{ jobs.deploy.outputs.result }}
 
 jobs:
-  build:
+  # build:
+  #   timeout-minutes: 10
+  #   name: Build the application
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: ${{ inputs.environment }}
+  #     url: https://${{ inputs.hostname }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Build application
+  #       run: |
+  #         npm ci
+  #         npm run build --if-present
+  #       env:
+  #         ENVIRONMENT: ${{ inputs.environment }}
+  #         HOSTNAME: ${{ inputs.hostname }}
+  #         PORT: ${{ inputs.port }}
+  #         PROTOCOL: ${{ inputs.protocol }}
+  #         TWITTER: ${{ inputs.twitter }}
+  #         GITHUB: ${{ inputs.github }}
+  #         DISCORD: ${{ inputs.discord }}
+  #         GA_MEASUREMENT: ${{ inputs.ga-measurement }}
+  #         SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
+  #         SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
+  #         SENTRY_ORG_ID: ${{ inputs.sentry-org-id }}
+  #         PUBLIC_API_HOSTNAME: ${{ inputs.PUBLIC_API_HOSTNAME }}
+  #         PUBLIC_TURNSLITE_KEY_INVISIBLE: ${{ secrets.PUBLIC_TURNSLITE_KEY_INVISIBLE }}
+  #         PUBLIC_TURNSLITE_KEY_MANAGED: ${{ secrets.PUBLIC_TURNSLITE_KEY_MANAGED }}
+  #         PUBLIC_GOOGLE_MAP_KEY: ${{ secrets.PUBLIC_GOOGLE_MAP_KEY }}
+  #     - name: Archive artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: app
+  #         path: |
+  #           dist
+  #           function
+  #         retention-days: 3
+
+  deploy:
     timeout-minutes: 10
-    name: Build the application
+    name: Deploy to ${{ inputs.environment }} environment
+    # needs: build
     runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.result.outputs.result }}
     environment:
       name: ${{ inputs.environment }}
       url: https://${{ inputs.hostname }}
+    permissions:
+      contents: read
+      deployments: write
     steps:
+      # - name: Download all workflow run artifacts
+      #   uses: actions/download-artifact@v3
+      # with:
+      #   name: app
+
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build application
@@ -72,38 +119,10 @@ jobs:
           SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
           SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
           SENTRY_ORG_ID: ${{ inputs.sentry-org-id }}
-          PUBLIC_API_HOSTNAME: ${{ inputs.PUBLIC_API_HOSTNAME }}
+          PUBLIC_API_HOSTNAME: ${{ vars.PUBLIC_API_HOSTNAME }}
           PUBLIC_TURNSLITE_KEY_INVISIBLE: ${{ secrets.PUBLIC_TURNSLITE_KEY_INVISIBLE }}
           PUBLIC_TURNSLITE_KEY_MANAGED: ${{ secrets.PUBLIC_TURNSLITE_KEY_MANAGED }}
           PUBLIC_GOOGLE_MAP_KEY: ${{ secrets.PUBLIC_GOOGLE_MAP_KEY }}
-      - name: Archive artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: app
-          path: |
-            dist
-            function
-          retention-days: 3
-
-  deploy:
-    timeout-minutes: 10
-    name: Publish to ${{ inputs.environment }} environment
-    needs: build
-    runs-on: ubuntu-latest
-    outputs:
-      result: ${{ steps.result.outputs.result }}
-    environment:
-      name: ${{ inputs.environment }}
-      url: https://${{ inputs.hostname }}
-    permissions:
-      contents: read
-      deployments: write
-    steps:
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
-        # with:
-        #   name: app
-
       - name: Publish to Cloudflare Pages
         id: publish
         uses: cloudflare/pages-action@v1
