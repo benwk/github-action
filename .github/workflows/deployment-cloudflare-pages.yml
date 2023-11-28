@@ -132,7 +132,7 @@ jobs:
           projectName: ${{ vars.CLOUDFLARE_PROJECT }}
           directory: dist
           branch: main
-          workingDirectory: app
+          # workingDirectory: app
           wranglerVersion: "3"
       - name: Outputs
         run: |
