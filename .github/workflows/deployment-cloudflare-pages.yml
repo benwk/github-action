@@ -50,6 +50,9 @@ jobs:
     timeout-minutes: 10
     name: Build the application
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: https://${{ inputs.hostname }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
