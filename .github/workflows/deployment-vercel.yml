@@ -1,0 +1,109 @@
+name: Cloudflare Pages Deployment
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      hostname:
+        required: false
+        type: string
+      port:
+        required: false
+        type: string
+      protocol:
+        required: false
+        type: string
+        default: https
+      ga-measurement:
+        required: false
+        type: string
+      sentry-project-id:
+        required: false
+        type: string
+      sentry-org-id:
+        required: false
+        type: string
+      pr-id:
+        required: false
+        type: string
+    outputs:
+      result:
+        description: "Deployment results"
+        value: ${{ jobs.deploy.outputs.result }}
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    name: Deploy to ${{ inputs.environment }} environment
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.result.outputs.result }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: https://${{ inputs.hostname }}
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          HOSTNAME: ${{ inputs.hostname }}
+          PORT: ${{ inputs.port }}
+          PROTOCOL: ${{ inputs.protocol }}
+          GA_MEASUREMENT: ${{ inputs.ga-measurement }}
+          SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
+          SENTRY_PROJECT_ID: ${{ inputs.sentry-project-id }}
+          SENTRY_ORG_ID: ${{ inputs.sentry-org-id }}
+          PUBLIC_API_HOSTNAME: ${{ vars.PUBLIC_API_HOSTNAME }}
+          PUBLIC_TURNSLITE_KEY_INVISIBLE: ${{ secrets.PUBLIC_TURNSLITE_KEY_INVISIBLE }}
+          PUBLIC_TURNSLITE_KEY_MANAGED: ${{ secrets.PUBLIC_TURNSLITE_KEY_MANAGED }}
+      - name: Deploy Project Artifacts to Vercel
+        id: publish
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Outputs
+        run: |
+          echo "ID: ${{ steps.publish.outputs.id }}"
+          echo "URL: ${{ steps.publish.outputs.url }}"
+          echo "Environment: ${{ steps.publish.outputs.environment }}"
+          echo "Alias: ${{ steps.publish.outputs.alias }}"
+      - name: Set deployment result
+        id: result
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  feedback-on-pr:
+    timeout-minutes: 10
+    name: Feedback on Pull Request
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment PR
+        if: ${{ inputs.pr-id }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
+            Preview URL is ready: https://${{ inputs.hostname }}
+          reactions: eyes, rocket
+          pr_number: ${{ inputs.pr-id }}
+      - name: Add Label
+        if: ${{ inputs.pr-id }}
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          number: ${{ inputs.pr-id }}
+          labels: ${{ inputs.environment }}
