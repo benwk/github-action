@@ -16,6 +16,9 @@ on:
       result:
         description: "Deployment results"
         value: ${{ jobs.deploy.outputs.result }}
+      url:
+        description: "Deployment URL"
+        value: ${{ jobs.deploy.outputs.url }}
 
 jobs:
   deploy:
@@ -24,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.result.outputs.result }}
+      url: ${{ steps.publish.outputs.url }}
     environment:
       name: ${{ inputs.environment }}
       url: https://${{ inputs.hostname }}
@@ -48,7 +52,15 @@ jobs:
         run: $VERCEL_BUILD_CMD$VERCEL_TOKEN
       - name: Deploy Project Artifacts to Vercel
         id: publish
-        run: $VERCEL_DEPLOY_CMD$VERCEL_TOKEN
+        run:  |
+          DEPLOY_OUTPUT=$($VERCEL_DEPLOY_CMD$VERCEL_TOKEN)
+          echo "$DEPLOY_OUTPUT"
+          if [ "$VERCEL_ENV" = "production" ]; then
+            URL=$(echo "$DEPLOY_OUTPUT" | grep 'Production:' | awk '{print $2}')
+          else
+            URL=$(echo "$DEPLOY_OUTPUT" | grep 'Preview:' | awk '{print $2}')
+          fi
+          echo "::set-output name=url::$URL"
       - name: Outputs
         run: |
           echo "ID: ${{ steps.publish.outputs.id }}"
@@ -73,7 +85,7 @@ jobs:
         with:
           message: |
             Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
-            Preview URL is ready: https://${{ inputs.hostname }}
+            Preview URL is ready: https://${{ needs.deploy.outputs.url }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
