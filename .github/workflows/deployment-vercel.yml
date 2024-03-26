@@ -1,4 +1,4 @@
-name: Cloudflare Pages Deployment
+name: Vercel Deployment
 
 on:
   workflow_call:
@@ -30,27 +30,25 @@ jobs:
     permissions:
       contents: read
       deployments: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ENV: ${{ (inputs.environment == 'test' || inputs.environment == 'production') && 'production' || 'preview' }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_BUILD_CMD: ${{ (inputs.environment == 'test' || inputs.environment == 'production') && 'vercel build --prod --token=' || 'vercel build --token=' }}
+      VERCEL_DEPLOY_CMD: ${{ (inputs.environment == 'test' || inputs.environment == 'production') && 'vercel deploy --prebuilt --prod --token=' || 'vercel deploy --prebuilt --token=' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=$VERCEL_ENV --token=$VERCEL_TOKEN
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: $VERCEL_BUILD_CMD$VERCEL_TOKEN
       - name: Deploy Project Artifacts to Vercel
         id: publish
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: $VERCEL_DEPLOY_CMD$VERCEL_TOKEN
       - name: Outputs
         run: |
           echo "ID: ${{ steps.publish.outputs.id }}"
