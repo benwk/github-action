@@ -13,9 +13,6 @@ on:
         required: false
         type: string
     outputs:
-      result:
-        description: "Deployment results"
-        value: ${{ jobs.deploy.outputs.result }}
       url:
         description: "Deployment URL"
         value: ${{ jobs.deploy.outputs.url }}
@@ -26,11 +23,10 @@ jobs:
     name: Deploy to ${{ inputs.environment }} environment
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ steps.result.outputs.result }}
       url: ${{ steps.publish.outputs.url }}
     environment:
       name: ${{ inputs.environment }}
-      url: https://${{ inputs.hostname }}
+      url: https://${{ steps.publish.outputs.url }}
     permissions:
       contents: read
       deployments: write
@@ -52,7 +48,7 @@ jobs:
         run: $VERCEL_BUILD_CMD$VERCEL_TOKEN
       - name: Deploy Project Artifacts to Vercel
         id: publish
-        run:  |
+        run: |
           DEPLOY_OUTPUT=$($VERCEL_DEPLOY_CMD$VERCEL_TOKEN)
           echo "$DEPLOY_OUTPUT"
           if [ "$VERCEL_ENV" = "production" ]; then
@@ -60,13 +56,7 @@ jobs:
           else
             URL=$(echo "$DEPLOY_OUTPUT" | grep 'Preview:' | awk '{print $2}')
           fi
-          echo "::set-output name=url::$URL"
-      - name: Outputs
-        run: |
-          echo "ID: ${{ steps.publish.outputs.id }}"
-          echo "URL: ${{ steps.publish.outputs.url }}"
-          echo "Environment: ${{ steps.publish.outputs.environment }}"
-          echo "Alias: ${{ steps.publish.outputs.alias }}"
+          echo "url=$URL" >> $GITHUB_OUTPUT
       - name: Set deployment result
         id: result
         run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
