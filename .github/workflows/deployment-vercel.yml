@@ -6,7 +6,7 @@ on:
       environment:
         required: true
         type: string
-      hostname:
+      env-url:
         required: false
         type: string
       pr-id:
@@ -26,7 +26,7 @@ jobs:
       url: ${{ steps.publish.outputs.url }}
     environment:
       name: ${{ inputs.environment }}
-      url: ${{ steps.publish.outputs.url }}
+      url: ${{ inputs.env-url }}
     permissions:
       contents: read
       deployments: write
@@ -68,8 +68,9 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
-            Preview URL is ready: ${{ needs.deploy.outputs.url }}
+            Hi Team, ${{ inputs.environment }} env deployment successful! :rocket:
+            Vercel Preview URL is ready: ${{ needs.deploy.outputs.url }}
+            Environment Preview URL is ready: ${{ inputs.env-url }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
