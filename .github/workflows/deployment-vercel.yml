@@ -50,14 +50,7 @@ jobs:
         id: publish
         run: |
           DEPLOY_OUTPUT=$($VERCEL_DEPLOY_CMD$VERCEL_TOKEN)
-          echo "$DEPLOY_OUTPUT"
-          if [ "$VERCEL_ENV" = "production" ]; then
-            URL=$(echo "$DEPLOY_OUTPUT" | grep 'Production:' | awk '{print $2}')
-          else
-            URL=$(echo "$DEPLOY_OUTPUT" | grep 'Preview:' | awk '{print $2}')
-          fi
-          echo "url=$URL"
-          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "url=$DEPLOY_OUTPUT" >> $GITHUB_OUTPUT
       - name: Set deployment result
         id: result
         run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
