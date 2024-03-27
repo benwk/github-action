@@ -69,7 +69,7 @@ jobs:
         with:
           message: |
             Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
-            Preview URL is ready: https://${{ needs.deploy.outputs.url }}
+            Preview URL is ready: ${{ needs.deploy.outputs.url }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
