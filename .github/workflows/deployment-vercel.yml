@@ -26,7 +26,7 @@ jobs:
       url: ${{ steps.publish.outputs.url }}
     environment:
       name: ${{ inputs.environment }}
-      url: https://${{ steps.publish.outputs.url }}
+      url: ${{ steps.publish.outputs.url }}
     permissions:
       contents: read
       deployments: write
