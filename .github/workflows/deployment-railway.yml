@@ -1,0 +1,71 @@
+name: Railway Go Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      env-url:
+        required: false
+        type: string
+      service:
+        required: true
+        type: string
+      pr-id:
+        required: false
+        type: string
+    outputs:
+      result:
+        description: "Deployment results"
+        value: ${{ jobs.deploy.outputs.result }}
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    name: Deploy to ${{ inputs.environment }} environment
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.result.outputs.result }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ inputs.env-url }}
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Railway
+        run: npm i -g @railway/cli
+      - name: Deploy
+        run: railway up --service ${{ inputs.service }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Set deployment result
+        id: result
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  feedback-on-pr:
+    timeout-minutes: 10
+    name: Feedback on Pull Request
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment PR
+        if: ${{ inputs.pr-id }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
+            Preview URL is ready: ${{ inputs.env-url }}
+          reactions: eyes, rocket
+          pr_number: ${{ inputs.pr-id }}
+      - name: Add Label
+        if: ${{ inputs.pr-id }}
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          number: ${{ inputs.pr-id }}
+          labels: ${{ inputs.environment }}
