@@ -59,7 +59,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Hi @Aliaic, ${{ inputs.environment }} env deployment successful! :rocket:
+            Hi Team, ${{ inputs.environment }} env deployment successful! :rocket:
             Preview URL is ready: ${{ inputs.env-url }}
           reactions: eyes, rocket
           pr_number: ${{ inputs.pr-id }}
