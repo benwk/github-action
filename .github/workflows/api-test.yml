@@ -66,16 +66,15 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Hi Team, ${{ inputs.environment }} env API test completed! :rocket:
+            Hi Team, ${{ inputs.environment }} env API tests completed! :rocket:
 
-            **Test Report:**
+            **Overview:**
             - Conclusion: ${{ needs.test-api.outputs.conclusion }}
             - Passed: ${{ needs.test-api.outputs.passed }}
             - Failed: ${{ needs.test-api.outputs.failed }}
             - Skipped: ${{ needs.test-api.outputs.skipped }}
             - Execution Time: ${{ needs.test-api.outputs.time }} ms
-            - URL: ${{ needs.test-api.outputs.url }}
-            - Preview: ${{ needs.test-api.outputs.url_html }}
+            - Detailed Report: ${{ needs.test-api.outputs.url_html }}
           reactions: eyes
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
