@@ -15,6 +15,14 @@ jobs:
     timeout-minutes: 10
     name: API Test in ${{ inputs.environment }} environment
     runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.test-report.outputs.conclusion }}
+      passed: ${{ steps.test-report.outputs.passed }}
+      failed: ${{ steps.test-report.outputs.failed }}
+      skipped: ${{ steps.test-report.outputs.skipped }}
+      time: ${{ steps.test-report.outputs.time }}
+      url: ${{ steps.test-report.outputs.url }}
+      url_html: ${{ steps.test-report.outputs.url_html }}
     environment:
       name: ${{ inputs.environment }}
     permissions:
@@ -36,6 +44,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
       - name: Publish Test Report
+        id: test-report
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
@@ -45,6 +54,7 @@ jobs:
 
   feedback-on-pr:
     timeout-minutes: 10
+    if: ${{ inputs.pr-id }}
     name: Feedback on Pull Request
     needs: test-api
     runs-on: ubuntu-latest
@@ -57,6 +67,15 @@ jobs:
         with:
           message: |
             Hi Team, ${{ inputs.environment }} env API test completed! :rocket:
+
+            **Test Report:**
+            - Conclusion: ${{ needs.test-api.outputs.conclusion }}
+            - Passed: ${{ needs.test-api.outputs.passed }}
+            - Failed: ${{ needs.test-api.outputs.failed }}
+            - Skipped: ${{ needs.test-api.outputs.skipped }}
+            - Execution Time: ${{ needs.test-api.outputs.time }} ms
+            - URL: ${{ needs.test-api.outputs.url }}
+            - Preview: ${{ needs.test-api.outputs.url_html }}
           reactions: eyes
           pr_number: ${{ inputs.pr-id }}
       - name: Add Label
