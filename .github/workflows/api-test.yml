@@ -6,9 +6,6 @@ on:
       environment:
         required: true
         type: string
-      service:
-        required: true
-        type: string
       pr-id:
         required: false
         type: string
