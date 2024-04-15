@@ -77,6 +77,7 @@ jobs:
             - Detailed Report: ${{ needs.test-api.outputs.url_html }}
           reactions: eyes
           pr_number: ${{ inputs.pr-id }}
+          comment_tag: api_tests
       - name: Add Label
         if: ${{ inputs.pr-id }}
         uses: actions-ecosystem/action-add-labels@v1
