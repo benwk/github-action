@@ -3,15 +3,19 @@ name: API Test with Bruno
 on:
   workflow_call:
     inputs:
-      repository:
-        required: true
-        type: string
       environment:
         required: true
         type: string
       pr-id:
         required: false
         type: string
+      repository:
+        required: false
+        type: string
+      local:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   test-api:
@@ -35,7 +39,11 @@ jobs:
       deployments: write
       pull-requests: write
     steps:
-      - name: Checkout test repository
+      - name: Checkout local repository
+        if: ${{ inputs.local }}
+        uses: actions/checkout@v4
+      - name: Checkout remote repository
+        if: ${{ !inputs.local }}
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
