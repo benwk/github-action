@@ -39,7 +39,7 @@ jobs:
       - name: Install Railway
         run: bash <(curl -fsSL cli.new)
       - name: Deploy
-        run: railway up -c -s ${{ inputs.service }} -e ${{ inputs.environment }}
+        run: railway up --ci -s ${{ inputs.service }} -e ${{ inputs.environment }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       - name: Set deployment result
