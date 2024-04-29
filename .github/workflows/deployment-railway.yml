@@ -15,18 +15,12 @@ on:
       pr-id:
         required: false
         type: string
-    outputs:
-      result:
-        description: "Deployment results"
-        value: ${{ jobs.deploy.outputs.result }}
 
 jobs:
   deploy:
     timeout-minutes: 10
     name: Deploy to ${{ inputs.environment }} environment
     runs-on: ubuntu-latest
-    outputs:
-      result: ${{ steps.result.outputs.result }}
     environment:
       name: ${{ inputs.environment }}
       url: ${{ inputs.env-url }}
@@ -39,12 +33,9 @@ jobs:
       - name: Install Railway
         run: bash <(curl -fsSL cli.new)
       - name: Deploy
-        run: railway up -c -s ${{ inputs.service }} -e ${{ inputs.environment }}
+        run: bash -c railway up -c -s ${{ inputs.service }} -e ${{ inputs.environment }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      - name: Set deployment result
-        id: result
-        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
 
   feedback-on-pr:
     timeout-minutes: 10
