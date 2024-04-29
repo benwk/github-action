@@ -1,4 +1,4 @@
-name: Railway Go Deployment
+name: Railway Deployment
 
 on:
   workflow_call:
